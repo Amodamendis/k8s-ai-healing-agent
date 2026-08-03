@@ -26,7 +26,6 @@ class LLMClient:
 
         payload = {
             "model": self.model_id,
-            "response_format": {"type": "json_object"},
             "messages": [
                 {"role": "system", "content": self.system_prompt},
                 {"role": "user", "content": f"Metrics - CPU: {current_cpu}%, Replicas: {current_replicas}. What is your decision?"}
@@ -35,6 +34,11 @@ class LLMClient:
 
         try:
             response = requests.post(self.endpoint, headers=headers, json=payload, timeout=10)
+            
+            # Print the actual error text if it fails again so we can debug it easily
+            if response.status_code != 200:
+                 logger.error(f"LLM Error Response: {response.text}")
+            
             response.raise_for_status()
             
             response_data = response.json()
