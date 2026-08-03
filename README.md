@@ -1,3 +1,4 @@
+```mermaid
 flowchart TD
     subgraph Developer_CI_CD["💻 CI/CD Pipelines (GitHub Actions)"]
         GH1["GitHub Repo: demo-cpu-spiker-app"] -->|Push to main| GHA1["GitHub Action: Docker Build & Push"]
@@ -22,14 +23,11 @@ flowchart TD
             end
 
             subgraph Default_NS["Namespace: default"]
-                APP["Demo CPU Spiker App\n(FastAPI / CPU Spiker)"]
+                APP["Demo CPU Spiker App<br/>(FastAPI / CPU Spiker)"]
                 SVC["Service: demo-cpu-spiker-app"]
                 SM["ServiceMonitor CRD"]
-                SECRET["Secret: llm-secrets\n(GROQ_API_KEY)"]
                 
                 subgraph Agent_Pod["AI Healing Agent Pod"]
-                    SA["ServiceAccount: ai-healer-sa"]
-                    ROLE["RBAC Role & RoleBinding\n(patch deployments/scale)"]
                     MAIN["main.py (30s Polling Loop)"]
                     METRICS["metrics_client.py"]
                     LLM["llm_client.py"]
@@ -47,7 +45,7 @@ flowchart TD
     end
 
     subgraph External_API["🌐 External LLM Provider"]
-        GROQ["Groq Cloud API\nModel: llama-3.1-8b-instant"]
+        GROQ["Groq Cloud API<br/>Model: llama-3.1-8b-instant"]
     end
 
     %% Execution Event Flow
@@ -60,3 +58,4 @@ flowchart TD
     GROQ -->|5. Return JSON: SCALE_UP| LLM
     MAIN --> EXEC
     EXEC -->|6. Patch Deployment Replicas| APP
+```
