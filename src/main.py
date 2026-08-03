@@ -3,7 +3,7 @@ import json
 import logging
 from src.config import *
 from src.metrics_client import PrometheusClient
-from src.bedrock_client import BedrockClient
+from src.llm_client import LLMClient
 from src.k8s_executor import K8sExecutor
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -13,7 +13,7 @@ def main():
     logger.info("Starting AI Healing Agent...")
     
     prom_client = PrometheusClient(PROMETHEUS_URL)
-    bedrock_client = BedrockClient(AWS_REGION, BEDROCK_MODEL_ID)
+    llm_client = LLMClient()
     k8s = K8sExecutor()
     
     last_action_time = 0
@@ -34,7 +34,7 @@ def main():
             if cpu > 80.0 or cpu < 50.0:
                 logger.info("Threshold crossed. Consulting Amazon Bedrock...")
                 
-                decision_str = bedrock_client.get_scaling_decision(cpu, replicas)
+                decision_str = llm_client.get_scaling_decision(cpu, replicas)
                 logger.info(f"Bedrock Decision: {decision_str}")
                 
                 try:

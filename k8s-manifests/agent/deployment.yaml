@@ -20,6 +20,9 @@ spec:
       - name: ai-agent
         image: 619891987476.dkr.ecr.us-east-1.amazonaws.com/k8s-ai-healing-agent:latest
         imagePullPolicy: Always
+        envFrom:
+        - secretRef:
+            name: llm-secrets
         env:
         - name: PROMETHEUS_URL
           value: "http://ai-monitor-kube-prometheus-prometheus.monitoring:9090"
