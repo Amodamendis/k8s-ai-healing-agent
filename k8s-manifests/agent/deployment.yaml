@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-ai-healing-agent
+  namespace: default
+  labels:
+    app: k8s-ai-healing-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-ai-healing-agent
+  template:
+    metadata:
+      labels:
+        app: k8s-ai-healing-agent
+    spec:
+      serviceAccountName: ai-healer-sa
+      containers:
+      - name: ai-agent
+        image: 619891987476.dkr.ecr.us-east-1.amazonaws.com/k8s-ai-healing-agent:latest
+        imagePullPolicy: Always
+        env:
+        - name: PROMETHEUS_URL
+          value: "http://ai-monitor-kube-prometheus-prometheus.monitoring:9090"
+        - name: TARGET_DEPLOYMENT
+          value: "demo-cpu-spiker-app"
+        - name: TARGET_NAMESPACE
+          value: "default"
+        - name: AWS_REGION
+          value: "us-east-1"
+        - name: BEDROCK_MODEL_ID
+          value: "meta.llama3-8b-instruct-v1:0"
+        - name: CHECK_INTERVAL_SECONDS
+          value: "30"
+        - name: COOLDOWN_SECONDS
+          value: "300"
