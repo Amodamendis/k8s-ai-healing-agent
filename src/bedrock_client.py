@@ -13,33 +13,32 @@ class BedrockClient:
             self.system_prompt = f.read()
 
     def get_scaling_decision(self, current_cpu: float, current_replicas: int) -> str:
-        prompt = (
-            f"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n"
-            f"{self.system_prompt}\n"
-            f"<|eot_id|><|start_header_id|>user<|end_header_id|>\n"
-            f"Metrics - CPU: {current_cpu}%, Replicas: {current_replicas}. What is your decision?<|eot_id|>\n"
-            f"<|start_header_id|>assistant<|end_header_id|>\n"
-        )
+        # We use the modernized Bedrock Converse API format
+        system_prompts = [{"text": self.system_prompt}]
+        
+        message_text = f"Metrics - CPU: {current_cpu}%, Replicas: {current_replicas}. What is your decision?"
+        messages = [{
+            "role": "user",
+            "content": [{"text": message_text}]
+        }]
 
-        # Llama 3 requires a specific payload format on Bedrock
-        payload = {
-            "prompt": prompt,
-            "max_gen_len": 128,
+        # Standardized parameters for the Converse API
+        inference_config = {
+            "maxTokens": 128,
             "temperature": 0.1,
-            "top_p": 0.9
+            "topP": 0.9
         }
 
         try:
-            response = self.client.invoke_model(
+            response = self.client.converse(
                 modelId=self.model_id,
-                body=json.dumps(payload),
-                accept="application/json",
-                contentType="application/json"
+                messages=messages,
+                system=system_prompts,
+                inferenceConfig=inference_config
             )
             
-            response_body = json.loads(response.get('body').read())
-            # Llama 3 returns the text in the "generation" field
-            decision = response_body.get('generation', '').strip()
+            # The Converse API standardizes the response path across all models
+            decision = response['output']['message']['content'][0]['text'].strip()
             return decision
             
         except Exception as e:

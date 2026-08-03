@@ -30,7 +30,7 @@ spec:
         - name: AWS_REGION
           value: "us-east-1"
         - name: BEDROCK_MODEL_ID
-          value: "meta.llama3-8b-instruct-v1:0"
+          value: "nvidia.nemotron-nano-12b-v2"
         - name: CHECK_INTERVAL_SECONDS
           value: "30"
         - name: COOLDOWN_SECONDS
