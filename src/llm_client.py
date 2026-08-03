@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 class LLMClient:
     def __init__(self):
         self.api_key = os.environ.get("GROQ_API_KEY")
-        self.model_id = "llama3-8b-8192"
+        self.model_id = "llama-3.1-8b-instant"
         self.endpoint = "https://api.groq.com/openai/v1/chat/completions"
         
         with open("prompts/bedrock_system_prompt.txt", "r") as f:
